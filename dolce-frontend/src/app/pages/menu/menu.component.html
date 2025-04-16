@@ -1,0 +1,145 @@
+<app-cart-icon></app-cart-icon>
+<app-toast></app-toast>
+
+<div class="container-fluid px-0">
+  <div class="d-flex flex-row" style="min-height: 100vh;">
+
+    <!-- Sidebar always on the left for all screen sizes -->
+    <nav class="sidebar-dolce d-flex flex-column align-items-center justify-content-start">
+      <img src="http://192.168.100.26:5000/uploads/dolce-name.png"
+           alt="DOLCE Logo"
+           class="sidebar-logo animate__animated animate__fadeInDown" />
+
+      <ul class="nav flex-column w-100 mt-3">
+        <li class="nav-item text-center flex-fill"
+            *ngFor="let cat of categories"
+            (click)="selectedCategory = cat; applyFilter()">
+          <a class="nav-link text-white fw-semibold small d-flex flex-column align-items-center justify-content-center"
+             [ngClass]="{'active': selectedCategory === cat}">
+            <i class="bi mb-1 fs-5" [ngClass]="categoryIcons[cat] || 'bi-dot'"></i>
+            <small class="d-md-block d-block" style="font-size: 0.65rem;">{{ cat }}</small>
+
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="menu-content flex-grow-1 p-2">
+      <h2 class="text-center mb-3 text-primary fw-bold">Our Menu</h2>
+
+      <div *ngIf="loading" class="text-center my-4">
+        <div class="spinner-border text-primary"></div>
+      </div>
+
+      <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-3" *ngIf="!loading">
+        <div class="col" *ngFor="let item of filteredItems">
+          <div class="card h-100 shadow-sm border-0 animate__animated animate__fadeInUp"
+               (click)="openItemModal(item)"
+               style="cursor: pointer;">
+            <img [src]="item.image ? 'http://192.168.100.26:5000' + item.image : 'https://via.placeholder.com/300'"
+                 class="card-img-top"
+                 style="height: 120px; object-fit: contain; background-color: #fff;" />
+            <div class="card-body px-2 py-2">
+              <h6 class="card-title text-primary fw-semibold mb-1">{{ item.name }}</h6>
+              <p class="fw-bold text-dark small mb-1">RM {{ (+item.price).toFixed(2) }}</p>
+              <!-- <p class="text-secondary small mb-0">Tap for details ➔</p> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Item Details Modal -->
+<div class="modal fade show d-block animate__animated animate__fadeIn" *ngIf="modalVisible" tabindex="-1"
+     style="background: rgba(0,0,0,0.6);">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content shadow-sm">
+
+      <!-- Header -->
+      <div class="modal-header border-bottom">
+        <h5 class="modal-title fw-bold">{{ selectedItem?.name }}</h5>
+        <button type="button" class="btn-close" (click)="modalVisible = false"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <div class="text-center mb-3">
+          <img [src]="selectedItem?.image ? 'http://192.168.100.26:5000' + selectedItem.image : 'https://via.placeholder.com/300'"
+               class="rounded-circle shadow-sm border"
+               style="width: 180px; height: 180px; object-fit: cover;" />
+        </div>
+
+        <p class="text-center text-muted px-4">
+          {{ selectedItem?.description }}
+          <br />
+          <small class="text-muted d-block mt-2">⚠️ Disclaimer: Items may vary slightly when served.</small>
+        </p>
+
+        <div class="text-center my-4">
+          <label class="fw-semibold me-3">Quantity:</label>
+          <button class="btn btn-outline-danger btn-sm me-2" (click)="changeQuantity(-1)">−</button>
+          <span class="fw-bold">{{ selectedQuantity }}</span>
+          <button class="btn btn-outline-success btn-sm ms-2" (click)="changeQuantity(1)">+</button>
+        </div>
+
+        <!-- Add-ons -->
+        <div *ngIf="selectedItem?.options?.length > 0" class="mb-3">
+          <div class="card shadow-sm border">
+            <div class="card-body">
+              <h6 class="fw-bold text-primary mb-3">Add-ons</h6>
+              <div class="row">
+                <div class="col-md-6" *ngFor="let opt of selectedItem.options">
+                  <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" [id]="'opt-' + opt.id"
+                          (change)="toggleOption(opt)">
+                    <label class="form-check-label" [for]="'opt-' + opt.id">
+                      {{ opt.name }} (+RM{{ +opt.price | number:'1.2-2' }})
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Milk Option -->
+        <div *ngIf="isDrinkCategory(selectedItem?.category)" class="mb-3">
+          <div class="card shadow-sm border">
+            <div class="card-body">
+              <h6 class="fw-bold text-primary mb-3">Milk Option</h6>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="radio" name="milkOption" id="regularMilk"
+                      value="Regular" [(ngModel)]="selectedMilkOption" (change)="recalculateTotal()" checked>
+                <label class="form-check-label" for="regularMilk">
+                  Regular Milk (RM 0.00)
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="milkOption" id="oatMilk"
+                      value="Oat Milk" [(ngModel)]="selectedMilkOption" (change)="recalculateTotal()">
+                <label class="form-check-label" for="oatMilk">
+                  Oat Milk (+RM 2.50)
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Total -->
+        <div class="text-end pe-1 mt-4">
+          <h5 class="fw-bold">Total: RM {{ calculatedTotal.toFixed(2) }}</h5>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer justify-content-between">
+        <button class="btn btn-outline-secondary" (click)="modalVisible = false">Cancel</button>
+        <button class="btn btn-primary" (click)="addToCartFromModal()">Add to Cart</button>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,62 @@
+/* You can add global styles to this file, and also import other style files */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+:root {
+  --primary-color: #273071;
+  --primary-dark: #1f275e;
+  --primary-light: #394593;
+
+  --text-light: #ffffff;
+  --text-dark: #000000;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+}
+
+.text-primary {
+  color: var(--primary-color) !important;
+}
+
+.bg-primary {
+  background-color: var(--primary-color) !important;
+  color: var(--text-light);
+}
+
+.border-primary {
+  border-color: var(--primary-color) !important;
+}
+
+.dolce-primary {
+  color: var(--primary-color);
+}
+
+.dolce-bg {
+  background-color: var(--primary-color);
+  color: var(--text-light);
+}
+
+.export-mode * {
+  animation: none !important;
+  transition: none !important;
+  opacity: 1 !important;
+}
+
+#reportContent {
+  background: white;
+  padding: 20px;
+}
+
+.card-img-top {
+  transition: opacity 0.3s ease-in-out;
+  opacity: 0;
+}
+.card-img-top[src] {
+  opacity: 1;
+}

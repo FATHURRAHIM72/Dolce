@@ -1,0 +1,53 @@
+<div class="container-fluid p-0">
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary px-4">
+    <div class="text-center mb-4">
+      <span class="navbar-brand fw-bold">Admin Dashboard</span>
+    </div>
+    <div class="ms-auto text-white d-flex align-items-center">
+      <span class="fw-semibold">Hello, {{ userName }}</span>
+      <button class="btn btn-outline-light btn-sm ms-2" (click)="logout()">Logout</button>
+    </div>
+  </nav>
+
+  <div class="row min-vh-100">
+    <!-- Redesigned Sidebar -->
+    <div class="col-md-2 d-flex flex-column align-items-center bg-dark-blue text-white py-4 shadow-sm" style="min-height: 100vh;">
+      <img src="http://localhost:5000/uploads/dolce-name.png" alt="DOLCE name" class="top-logo animate__animated animate__fadeInDown mb-3" />
+
+      <ul class="nav flex-column w-100 px-2">
+        <li class="nav-item mb-2">
+          <a routerLink="reports" routerLinkActive="active-link" class="nav-link text-white d-flex align-items-center">
+            📈 <span class="ms-2">Sales Report</span>
+          </a>
+        </li>
+        <li class="nav-item mb-2">
+          <a routerLink="orders" routerLinkActive="active-link" class="nav-link text-white d-flex align-items-center">
+            🧾 <span class="ms-2">Orders</span>
+          </a>
+        </li>
+        <li class="nav-item mb-2">
+          <a routerLink="items" routerLinkActive="active-link" class="nav-link text-white d-flex align-items-center">
+            🍽 <span class="ms-2">Manage Items</span>
+          </a>
+        </li>
+        <li class="nav-item mb-2">
+          <a routerLink="options" routerLinkActive="active-link" class="nav-link text-white d-flex align-items-center">
+            ⚙️ <span class="ms-2">Item Options</span>
+          </a>
+        </li>
+        <li class="nav-item mb-2">
+          <a routerLink="users" routerLinkActive="active-link" class="nav-link text-white d-flex align-items-center">
+            👥 <span class="ms-2">Manage Users</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Content -->
+    <div class="col-md-10 p-4">
+    
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

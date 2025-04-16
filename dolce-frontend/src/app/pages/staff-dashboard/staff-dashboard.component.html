@@ -1,0 +1,173 @@
+<app-toast></app-toast>
+
+<div class="container py-4">
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-primary"><i class="bi bi-speedometer2 me-2"></i>Staff Dashboard</h2>
+    <!-- Top-right user greeting -->
+    <div class="text-end mb-3 me-3">
+      <span class="fw-semibold">Hello, {{ userName }}</span>
+      <button class="btn btn-outline-danger btn-sm ms-2" (click)="logout()">Logout</button>
+    </div>    
+  </div>
+  
+  <img src="http://localhost:5000/uploads/dolce-name.png" alt="DOLCE name"  class="top-logo animate__animated animate__fadeInDown" />
+
+  <!-- Tab Navigation -->
+  <div class="d-flex justify-content-center mb-4">
+    <button class="btn me-2" [class.btn-primary]="activeTab === 'active'" (click)="activeTab = 'active'">
+      📦 Active Orders
+    </button>
+    <button class="btn" [class.btn-primary]="activeTab === 'history'" (click)="activeTab = 'history'">
+      📜 Order History
+    </button>
+  </div>
+
+  <!-- Active Orders Section -->
+  <ng-container *ngIf="activeTab === 'active'">
+    <div *ngIf="loading" class="text-center my-5">
+      <div class="spinner-border text-primary"></div>
+    </div>
+
+    <div *ngIf="!loading && orders.length === 0" class="alert alert-info text-center">No active orders found.</div>
+
+    <div class="row g-4" *ngIf="!loading && orders.length > 0">
+      <div class="col-md-6" *ngFor="let order of orders">
+        <div class="card border-0 shadow animate__animated animate__fadeIn">
+          <div class="card-header bg-primary text-white d-flex justify-content-between">
+            <div>
+              🪑 Table {{ order.table_number }}
+              <div class="small text-light">🆔 Order ID: #{{ order.id }}</div>
+            </div>
+            <span class="badge bg-light text-dark align-self-center">
+              {{ formatStatus(order.status) }}
+            </span>            
+          </div>
+          <div class="card-body">
+            <p><strong>Payment:</strong> {{ order.payment_status }} ({{ order.payment_method }})</p>
+            <ul class="list-group mb-2">
+              <li class="list-group-item" *ngFor="let item of order.items">
+                {{ item.name }} <span class="text-muted">(x{{ item.quantity }})</span>
+                <div *ngIf="item.options" class="small text-muted">Add-ons: {{ item.options }}</div>
+              </li>
+            </ul>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+              <button class="btn btn-outline-secondary btn-sm" (click)="openOrderModal(order)">View More</button>
+              <div class="btn-group" *ngIf="order.status !== 'cancelled'">
+                <button class="btn btn-outline-primary btn-sm" (click)="updateStatus(order.id, 'preparing')">Mark as Preparing</button>
+                <button class="btn btn-outline-primary btn-sm" (click)="updateStatus(order.id, 'ready')">Mark as Ready</button>
+                <button class="btn btn-outline-success btn-sm" (click)="updateStatus(order.id, 'served')">Mark as Served</button>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Order History Section -->
+  <ng-container *ngIf="activeTab === 'history'">
+          <!-- 🔍 Filter Row -->
+    <div class="row justify-content-center g-3 mb-4">
+      <div class="col-md-2">
+        <input [(ngModel)]="filterTable" type="text" class="form-control" placeholder="🔎 Table Number" />
+      </div>
+      <div class="col-md-2">
+        <input [(ngModel)]="filterOrderId" type="text" class="form-control" placeholder="🆔 Order ID" />
+      </div>
+      <div class="col-md-2">
+        <input [(ngModel)]="filterDate" type="date" class="form-control" />
+      </div>
+      <div class="col-md-2">
+        <input [(ngModel)]="filterTime" type="time" class="form-control" />
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary" (click)="resetFilters()">
+          <i class="bi bi-x-circle me-1"></i> Clear Filters
+        </button>
+      </div>
+    </div>
+    
+
+
+    <div *ngIf="orderHistory.length === 0" class="alert alert-info text-center">No served orders yet.</div>
+
+    <div class="row g-4">
+      <div class="col-md-6" *ngFor="let order of filteredOrderHistory()">
+        <div class="card shadow border-0 animate__animated animate__fadeIn">
+          <div class="card-header bg-light d-flex justify-content-between">
+            <div>
+              🪑 Table {{ order.table_number }}
+              <div class="small text-muted">🆔 Order ID: #{{ order.id }}</div>
+            </div>
+            <span class="badge"
+                  [ngClass]="{
+                    'bg-success': order.status === 'served',
+                    'bg-danger': order.status === 'cancelled'
+                  }">
+              {{ formatStatus(order.status) }}
+            </span>
+
+          </div>
+          <div class="card-body">
+            <!-- ✅ Show only "Served At" if status is 'served' -->
+            <p *ngIf="order.status === 'served'">
+              <strong>Served At:</strong> {{ order.served_at | date:'dd MMM yyyy, h:mm a' }}
+            </p>
+          
+            <!-- ✅ Show only "Cancelled At" if status is 'cancelled' -->
+            <p *ngIf="order.status === 'cancelled'">
+              <strong>Cancelled At:</strong> {{ order.cancelled_at | date:'dd MMM yyyy, h:mm a' }}
+            </p>
+          
+            <p><strong>Payment:</strong> {{ order.payment_status }} ({{ order.payment_method }})</p>
+          
+            <ul class="list-group mb-2">
+              <li class="list-group-item" *ngFor="let item of order.items">
+                {{ item.name }} (x{{ item.quantity }})
+                <div *ngIf="item.options" class="small text-muted">Add-ons: {{ item.options }}</div>
+              </li>
+            </ul>
+          
+            <button class="btn btn-outline-secondary btn-sm" (click)="openOrderModal(order)">🔍 View Details</button>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Order Detail Modal -->
+  <!-- Modal -->
+<div class="modal fade show d-block" tabindex="-1" *ngIf="selectedOrder" style="background: rgba(0,0,0,0.6); z-index: 1050;">
+  <div class="modal-dialog modal-lg modal-dialog-centered animate__animated animate__fadeIn">
+    <div class="modal-content shadow">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">
+          📄 Order Details - Table {{ selectedOrder.table_number }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closeOrderModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Order ID:</strong> #{{ selectedOrder.id }}</p>
+        <p><strong>Status:</strong> {{ formatStatus(selectedOrder.status) }}</p>
+        <p><strong>Payment:</strong> {{ selectedOrder.payment_status }} ({{ selectedOrder.payment_method }})</p>
+        <p><strong>Placed:</strong> {{ selectedOrder.created_at | date:'dd MMMM yyyy, h:mm a' }}</p>
+        <p *ngIf="selectedOrder.served_at">
+          <strong>Served At:</strong> {{ selectedOrder.served_at | date:'dd MMMM yyyy, h:mm a' }}
+        </p>        
+        <ul class="list-group mt-3">
+          <li class="list-group-item" *ngFor="let item of selectedOrder.items">
+            {{ item.name }} (x{{ item.quantity }})
+            <div *ngIf="item.options" class="small text-muted ms-2">Add-ons: {{ item.options }}</div>
+          </li>
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeOrderModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

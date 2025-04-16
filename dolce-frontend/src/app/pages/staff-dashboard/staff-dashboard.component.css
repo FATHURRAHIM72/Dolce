@@ -1,0 +1,30 @@
+.card-header {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  
+  .badge {
+    font-size: 0.85rem;
+    padding: 5px 10px;
+  }
+
+  .card {
+    transition: transform 0.2s ease;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+  }
+
+  .card-header .badge {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Top Logo */
+.top-logo {
+  width: 180px;
+  display: block;
+  margin: 0 auto 10px auto;
+}
+  
+  

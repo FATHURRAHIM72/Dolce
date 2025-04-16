@@ -1,0 +1,101 @@
+<app-toast></app-toast>
+
+<div class="container py-5 animate__animated animate__fadeIn">
+  <h2 class="text-center text-primary fw-bold mb-4">
+    <i class="bi bi-cart3 me-2"></i> Your Order
+  </h2>
+
+  <!-- 🛒 Empty Cart -->
+  <div *ngIf="cartItems.length === 0" class="text-center text-muted animate__animated animate__fadeIn">
+    <i class="bi bi-cart-x display-4 mb-2"></i>
+    <p>Your cart is currently empty.</p>
+    <a routerLink="/" class="btn btn-outline-primary">
+      <i class="bi bi-arrow-left-circle me-1"></i> Back to Menu
+    </a>
+  </div>
+
+  <!-- 🧾 Cart List -->
+  <div *ngIf="cartItems.length > 0">
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4" *ngFor="let item of cartItems">
+        <div class="card mb-3 shadow-sm animate__animated animate__fadeInUp h-100">
+          <div class="row g-0 h-100">
+            <div class="col-4">
+              <img [src]="'http://192.168.100.26:5000' + item.image" alt="Item Image" class="img-fluid rounded-start h-100 object-fit-cover" />
+            </div>
+            <div class="col-8">
+              <div class="card-body d-flex flex-column justify-content-between h-100">
+                <div>
+                  <h5 class="card-title fw-bold text-primary">{{ item.name }}</h5>
+                  <p class="card-text small text-muted" *ngIf="item.options">+ {{ item.options }}</p>
+                  <p class="card-text text-muted small mb-1">Price: RM {{ (+item.price).toFixed(2) }}</p>
+                  <p class="card-text fw-semibold text-success small mb-2">Subtotal: RM {{ (item.price * item.quantity).toFixed(2) }}</p>
+                </div>
+                <div class="d-flex align-items-center justify-content-between mt-auto">
+                  <div>
+                    <button class="btn btn-sm btn-outline-danger me-1" (click)="updateQuantity(item, -1)">−</button>
+                    <span class="fw-semibold">{{ item.quantity }}</span>
+                    <button class="btn btn-sm btn-outline-success ms-1" (click)="updateQuantity(item, 1)">+</button>
+                  </div>
+                  <button class="btn btn-sm btn-outline-dark" (click)="removeItem(item)">
+                    <i class="bi bi-trash"></i> Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>      
+    </div>
+
+    <!-- 💳 Order Details -->
+    <div class="checkout-section mt-5 p-4 rounded bg-light shadow-sm animate__animated animate__fadeInUp">
+      <h5 class="fw-semibold text-dark mb-3">
+        <i class="bi bi-clipboard-check me-2"></i> Order Details
+      </h5>
+
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label">Table Number</label>
+          <input type="text" class="form-control"
+       placeholder="Enter Table Number"
+       [(ngModel)]="tableNumber"
+       [readonly]="!isTableEditable">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label">Payment Method</label>
+          <select class="form-select" [(ngModel)]="paymentMethod">
+            <option value="counter">Pay at Counter</option>
+            <option value="online">Online Payment (Dummy)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mt-4 d-flex justify-content-between align-items-center">
+        <span class="fs-5 fw-semibold">Total:</span>
+        <span class="fs-4 text-success fw-bold">RM {{ totalPrice.toFixed(2) }}</span>
+      </div>
+
+      <div class="text-end mt-3">
+        <button class="btn btn-primary px-4" (click)="checkout()">
+          <i class="bi bi-check-circle me-1"></i> Place Order
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔄 Continue Browsing Button -->
+<div class="text-center mt-4 animate__animated animate__fadeInUp" *ngIf="cartItems.length > 0 && !redirecting">
+  <a href="" class="btn btn-primary px-4">
+    <i class="bi bi-check-circle me-2"></i> Continue Browsing Menu
+  </a>
+</div>
+
+
+  <!-- ⏳ Loading Spinner -->
+  <div *ngIf="redirecting" class="text-center my-5 animate__animated animate__fadeIn">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2 text-muted">Redirecting to order summary...</p>
+  </div>
+</div>

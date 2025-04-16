@@ -1,0 +1,40 @@
+:root {
+    --primary-color: #0d3b66;
+  }
+  
+  h2 {
+    color: var(--primary-color);
+  }
+  
+  .checkout-section {
+    background-color: #f8f9fa;
+    border-left: 4px solid var(--primary-color);
+    animation: fadeInUp 0.4s ease;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      transform: translateY(20px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  /* cart.component.css */
+a.btn-outline-primary {
+  transition: all 0.3s ease;
+}
+
+a.btn-outline-primary:hover {
+  background-color: #0d6efd;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.object-fit-cover {
+  object-fit: cover;
+  width: 100%;
+}

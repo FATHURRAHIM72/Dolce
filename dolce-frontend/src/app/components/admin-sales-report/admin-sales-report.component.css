@@ -1,0 +1,16 @@
+.export-mode {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .export-mode * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  

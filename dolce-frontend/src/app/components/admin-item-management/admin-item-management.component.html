@@ -1,0 +1,126 @@
+<app-toast></app-toast>
+
+<div class="container my-5">
+  <h2 class="text-center text-primary fw-bold mb-4">🍽️ Item Management</h2>
+
+  <!-- Filter Input -->
+<div class="row justify-content-center mb-3">
+  <div class="col-md-6">
+    <input type="text" [(ngModel)]="filterText" class="form-control text-center"
+           placeholder="🔍 Search items by name or category...">
+  </div>
+</div>
+
+
+  <div class="text-end mb-3">
+    <button class="btn btn-primary" (click)="openAddModal()">
+      <i class="bi bi-plus-circle me-1"></i> Add Item
+    </button>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-4" *ngFor="let item of filteredItems()">
+      <div class="card h-100 shadow-sm animate__animated animate__fadeInUp" style="height: 100%;">
+        <img [src]="'http://localhost:5000' + item.image" 
+             class="card-img-top" 
+             style="height: 240px; object-fit: cover;" />
+        <div class="card-body">
+          <h5 class="fw-bold text-primary">{{ item.name }}</h5>
+          <p class="mb-1 text-muted small">{{ item.category }} • RM {{ (+item.price).toFixed(2) }}</p>
+          <p class="small">{{ item.description }}</p>
+          <span class="badge bg-success" *ngIf="item.availability === 1">Available</span>
+          <span class="badge bg-secondary" *ngIf="item.availability === 0">Out of Stock</span>
+        </div>
+        <div class="card-footer d-flex justify-content-between">
+          <button class="btn btn-sm btn-outline-info" (click)="openEditModal(item)">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-danger" (click)="openDeleteModal(item)">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+    </div>    
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade show d-block" *ngIf="showModal" tabindex="-1" style="background: rgba(0,0,0,0.6); z-index: 1050;">
+  <div class="modal-dialog modal-lg modal-dialog-centered animate__animated animate__fadeIn">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">
+          {{ editingItem ? 'Edit Item' : 'Add New Item' }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">Name</label>
+              <input [(ngModel)]="itemFormData.name" name="name" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Price (RM)</label>
+              <input type="number" [(ngModel)]="itemFormData.price" name="price" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Category</label>
+              <select [(ngModel)]="itemFormData.category" name="category" class="form-select">
+                <option>Dolce Signature</option>
+                <option>Flavoured Coffee</option>
+                <option>Non Coffee</option>
+                <option>Pasta Series</option>
+              </select>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Description</label>
+              <textarea [(ngModel)]="itemFormData.description" name="description" class="form-control"></textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Availability</label>
+              <select [(ngModel)]="itemFormData.availability" name="availability" class="form-select">
+                <option [value]="1">In Stock</option>
+                <option [value]="0">Out of Stock</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Item Image</label>
+              <input type="file" class="form-control" (change)="onImageSelected($event)">
+              <img *ngIf="previewUrl" [src]="previewUrl" class="img-fluid rounded mt-2" style="max-height: 120px;" />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeModal()">Cancel</button>
+        <button class="btn btn-primary" (click)="saveItem()">
+          {{ editingItem ? 'Update' : 'Add' }} Item
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 🗑️ Delete Confirmation Modal -->
+<div class="modal fade show d-block" *ngIf="showDeleteModal" tabindex="-1" style="background: rgba(0,0,0,0.5); z-index: 1050;">
+  <div class="modal-dialog modal-dialog-centered animate__animated animate__zoomIn">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm Deletion</h5>
+        <button type="button" class="btn-close" (click)="closeDeleteModal()"></button>
+      </div>
+      <div class="modal-body text-center">
+        <p class="mb-3">Are you sure you want to delete this item?</p>
+        <p class="fw-bold text-danger">{{ selectedDeleteName }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDeleteModal()">Cancel</button>
+        <button class="btn btn-danger" (click)="confirmDeleteItem()">
+          <i class="bi bi-trash3 me-1"></i> Yes, Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

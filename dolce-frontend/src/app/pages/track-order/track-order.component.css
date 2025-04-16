@@ -1,0 +1,41 @@
+input.form-control {
+    max-width: 200px;
+  }
+
+  .step {
+    text-align: center;
+    flex: 1;
+    opacity: 0.3;
+    transition: opacity 0.4s ease;
+  }
+  
+  .step.active {
+    opacity: 1;
+  }
+  
+  .step .icon {
+    font-size: 1.8rem;
+  }
+  
+  .step .label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 0.2rem;
+  }
+
+  .step-tracker {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #999;
+  }
+  .step-tracker div.active {
+    color: #0d6efd;
+  }
+  .step-line {
+    flex-grow: 1;
+    height: 2px;
+    background-color: #dee2e6;
+    margin: 0 5px;
+  }
+  
+  
